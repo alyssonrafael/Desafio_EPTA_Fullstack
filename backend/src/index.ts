@@ -3,6 +3,7 @@ import authRoutes from "./routes/authRoutes";
 import prisma from "./prisma"; // Importando a instância do Prisma Client
 import dotenv from "dotenv";
 import cors from "cors";
+import userRoutes from './routes/userRoutes';
 
 const app = express();
 const PORT = process.env.PORT || 3333;
@@ -20,6 +21,7 @@ app.use(cors({
 app.use(express.json());
 // Rotas
 app.use('/api/auth', authRoutes );
+app.use('/api', userRoutes );
 
 // Função para testar a conexão
 const testConnection = async () => {

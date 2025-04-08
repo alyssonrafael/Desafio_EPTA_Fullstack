@@ -1,4 +1,22 @@
 import { Request, Response, NextFunction } from "express";
+import { console } from "inspector";
+import { verify } from "jsonwebtoken";
+import { JwtPayload } from "jsonwebtoken";
+
+// Esta declaração modifica globalmente os tipos do Express
+// para adicionar a propriedade 'usuario' ao objeto Request facilitando o acesso ao id do usuario 
+declare global {
+  namespace Express {
+    // Estende a interface original Request do Express
+    interface Request {
+      // Adiciona a propriedade opcional chamada 'usuario' que:
+      // - Contém todos os campos padrão de um JWT (JwtPayload)
+      // - Mais um campo obrigatório 'userId' do tipo string para que
+      // -seja possivel acessar o id do usuario senpre que o token for validado em uma req que use o middleware de autenticarToken
+      usuario?: JwtPayload & { userId: string };
+    }
+  }
+}
 
 export const validateInputRegiter = (
   req: Request,
@@ -75,4 +93,74 @@ export const validateInputlogin = (
   }
 
   next();
+};
+
+export const autenticarToken = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    //Extração do token passado no header autorization
+    //simplifica o token ja colocando o bearer na frete
+    const token = req.headers.authorization?.replace("Bearer ", "");
+
+    //se o token nao for fornecido já retorna erro
+    if (!token) {
+      res.status(401).json({
+        error: "token not provided",
+        code: "TOKEN_MISSING",
+      });
+      return;
+    }
+
+    // Verificação do token
+    const decoded = verify(
+      token,
+      process.env.JWT_SECRET as string
+    ) as JwtPayload & { userId: string };
+
+    // Validação do payload (verificando userId)
+    if (typeof decoded !== "object" || !decoded.userId) {
+      res.status(401).json({
+        error: "Invalid token: incorrect payload",
+        code: "INVALID_TOKEN_PAYLOAD",
+      });
+      return;
+    }
+
+    //Adiciona o usuário à requisição para que o id possa ser usado no proximo controller se passar pelo middleware
+    req.usuario = {
+      ...decoded,
+      userId: decoded.userId, // Garantindo que userId está presente
+    };
+
+    next();
+  } catch (error) {
+    //validações de erro caso o token seja invalido ou expirado
+    if (error instanceof Error) {
+      if (error.name === "TokenExpiredError") {
+        res.status(401).json({
+          error: "Token expired",
+          code: "TOKEN_EXPIRED",
+        });
+        return;
+      }
+
+      if (error.name === "JsonWebTokenError") {
+        res.status(401).json({
+          error: "Invalid token",
+          code: "INVALID_TOKEN",
+        });
+        return;
+      }
+    }
+    // erro generico caso o erro nao esteja sendo tratado
+    console.error("AUTHENTICATION ERROR:", error);
+    res.status(500).json({
+      error: "AUTHENTICATIONERROR",
+      code: "AUTHENTICATION_ERROR",
+    });
+    return;
+  }
 };
