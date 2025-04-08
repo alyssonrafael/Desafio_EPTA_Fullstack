@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@theme {
+  /* texto mais usados */
+  --color-textoPrimario: #2b3a4b;
+  --color-textoSecundario: #858c94;
+  --color-textoInativo: #545d69;
+  /* card */
+  --color-numCard: #1b2559;
+  --color-textoCard: #a3aed0;
+  /* botoes */
+  --color-botaoBg: #007aff;
+}
