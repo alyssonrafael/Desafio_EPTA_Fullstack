@@ -1,5 +1,5 @@
 import express from 'express';
-import exemploRoutes from './routes/exampleRouter';
+import authRoutes from "./routes/authRoutes";
 import prisma from "./prisma"; // Importando a instância do Prisma Client
 import dotenv from "dotenv";
 import cors from "cors";
@@ -19,7 +19,7 @@ app.use(cors({
 
 app.use(express.json());
 // Rotas
-app.use('/api', exemploRoutes);
+app.use('/api/auth', authRoutes );
 
 // Função para testar a conexão
 const testConnection = async () => {
