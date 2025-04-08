@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    container_name: banco_desafio_EPTA
+    environment:
+    # Valores padrão se não definido no .env
+      POSTGRES_USER: ${DB_USER:-postgres}  
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-senhasegura}  
+      POSTGRES_DB: ${DB_NAME:-meuappdb}  
+    ports:
+      - "5432:5432"  # Usando a porta padrão * Verificar se nao tem nenhum rodando na msm porta *
+    volumes:
+      - volume_banco_desafio_EPTA:/var/lib/postgresql/data
+    restart: unless-stopped 
+
+volumes:
+  volume_banco_desafio_EPTA:
