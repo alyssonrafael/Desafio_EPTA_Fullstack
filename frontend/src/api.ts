@@ -9,7 +9,7 @@ export const api = axios.create({
 api.interceptors.response.use(
   response => response,
   error => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && !error.config.url.includes('/auth')) {
       window.location.href = "/";
       localStorage.removeItem("token");
       localStorage.removeItem("user");
