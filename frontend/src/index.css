@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
 @theme {
+  /* background login */
+  --color-backgroundLogin: #007AFF;
   /* texto mais usados */
   --color-textoPrimario: #2b3a4b;
   --color-textoSecundario: #858c94;

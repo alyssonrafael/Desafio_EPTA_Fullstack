@@ -5,10 +5,13 @@ import Dashboard from "../pages/Dashboard";
 import Reports from "../pages/Reports";
 import PrivateRoute from "./PrivateRoute";
 import { AuthProvider } from "../contexts/AuthContext";
+import { MessageProvider } from "../contexts/MessageContext";
 
 const AppRoutes = () => {
   return (
-    //provedor do contexto de autenticão envolvendo toda aplicação
+    // provedor do contexto de mensagem para que ela seja gerenciada globalmente
+    <MessageProvider>
+    {/* provedor do contexto de autenticão envolvendo toda aplicação */}
     <AuthProvider> 
       <Router>
         <Routes>
@@ -29,6 +32,7 @@ const AppRoutes = () => {
         </Routes>
       </Router>
     </AuthProvider>
+    </MessageProvider>
   );
 };
 

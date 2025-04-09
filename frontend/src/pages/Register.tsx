@@ -1,92 +1,179 @@
 import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useMessage } from "../contexts/MessageContext";
+import { useForm } from "react-hook-form";
+import axios from "axios";
+import Button from "../components/Button";
+import Input from "../components/Input";
+import image from "../assets/image.svg";
+import logo from "../assets/logosistemas3-339x96 1.svg";
+
 interface RegisterData {
   email: string;
   password: string;
+  confirmPassword: string;
   name: string;
 }
+
 const Register = () => {
-  const { register } = useAuth();
+  // Hooks para autenticação, navegação e mensagens
+  const { register: registerUser } = useAuth();
   const navigate = useNavigate();
-
-  const [form, setForm] = useState<RegisterData>({
-    email: "",
-    password: "",
-    name: "",
-  });
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const { showMessage } = useMessage();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  // Configuração do react-hook-form para validação
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<RegisterData>();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+  // Função de submissão do formulário de cadastro de cliente
+  const onSubmit = async (data: RegisterData) => {
     setLoading(true);
     try {
-      await register(form.name, form.email, form.password);
+      await registerUser(data.name, data.email, data.password);
       navigate("/");
-    } catch (err) {
-      console.log(err);
-      setError("Erro ao cadastrar. Tente novamente.");
+      showMessage(
+        "success",
+        "Cadastro realizado com sucesso, efetue o login!",
+        4000
+      );
+    } catch (err: unknown) {
+      // Tratamento de diferentes tipos de erros
+      showMessage(
+        "warning",
+        "Erro ao realizar cadastro, tente novamente!",
+        3000
+      );
+      // Erros específicos da API
+      if (axios.isAxiosError(err)) {
+        if (err.response?.status === 500) {
+          showMessage(
+            "danger",
+            "Erro interno do servidor. Tente novamente mais tarde.",
+            3000
+          );
+        } else if (err.response?.status === 409) {
+          showMessage(
+            "warning",
+            "Erro ao realizar Cadastro. Confirme seu email",
+            3000
+          );
+        } else if (err.request && !err.response) {
+          showMessage(
+            "danger",
+            "Servidor indisponível. Verifique sua conexão.",
+            3000
+          );
+        }
+      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white shadow-md rounded p-6 w-full max-w-sm"
-      >
-        <h2 className="text-2xl font-bold mb-4 text-center">Cadastro</h2>
+    <div className="min-h-screen flex flex-col md:flex-row">
+      {/* Seção do formulário (esquerda em desktop, topo em mobile) */}
+      <div className="w-full md:w-1/2 flex items-center justify-center p-8 bg-gray-50">
+        <div className="max-w-md space-y-2">
+          {/* Cabeçalho com logo */}
+          <div className="text-center p-8 text-white">
+            <img src={logo} alt="Logo" className="w-52 h-14 mx-auto" />
+            <p className="text-gray-600 text-lg mt-4">
+              Bem-vindo de volta! Insira seus dados.
+            </p>
+          </div>
+          {/* Formulário de registro */}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <Input
+              type="email"
+              label="Email"
+              placeholder="Digite seu e-mail"
+              error={errors.email?.message}
+              {...register("email", {
+                required: "Email é obrigatório",
+                // validaçao de email
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: "Email inválido",
+                },
+              })}
+            />
 
-        <input
-          type="text"
-          name="name"
-          value={form.name}
-          onChange={handleChange}
-          placeholder="Nome"
-          className="w-full p-2 mb-3 border border-gray-300 rounded"
-          required
-        />
+            <Input
+              type="text"
+              label="Nome"
+              placeholder="Digite seu nome"
+              error={errors.name?.message}
+              {...register("name", {
+                required: "Nome é obrigatório",
+                minLength: {
+                  value: 3,
+                  message: "Nome deve ter pelo menos 3 caracteres",
+                },
+              })}
+            />
 
-        <input
-          type="email"
-          name="email"
-          value={form.email}
-          onChange={handleChange}
-          placeholder="E-mail"
-          className="w-full p-2 mb-3 border border-gray-300 rounded"
-          required
-        />
+            <Input
+              type="password"
+              label="Senha"
+              placeholder="Digite sua senha"
+              error={errors.password?.message}
+              {...register("password", {
+                required: "Senha é obrigatória",
+                minLength: {
+                  value: 6,
+                  message: "Senha deve ter pelo menos 6 caracteres",
+                },
+              })}
+            />
 
-        <input
-          type="password"
-          name="password"
-          value={form.password}
-          onChange={handleChange}
-          placeholder="Senha"
-          className="w-full p-2 mb-4 border border-gray-300 rounded"
-          required
-        />
+            <Input
+              type="password"
+              label="Confirmar senha"
+              placeholder="Digite novamente sua senha"
+              error={errors.confirmPassword?.message}
+              {...register("confirmPassword", {
+                required: "Confirmação de senha é obrigatória",
+                validate: (value) =>
+                  value === watch("password") || "As senhas não coincidem",
+              })}
+            />
+            {/* Botão de submissão */}
+            <Button
+              type="submit"
+              loading={loading}
+              label="Registar"
+              classNameButton="w-full rounded-xl py-3"
+              classNameText="font-bold"
+            />
+            {/* Link para login */}
+            <div className="text-center text-sm text-gray-600 mt-8">
+              Já tem uma conta?{" "}
+              <a
+                href="/"
+                className="font-medium text-blue-600 hover:text-blue-500"
+              >
+                Faça login!
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
 
-        {error && (
-          <p className="text-red-500 text-sm mb-2 text-center">{error}</p>
-        )}
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
-        >
-          {loading ? "Cadastrando..." : "Cadastrar"}
-        </button>
-      </form>
+      {/* Seção da imagem (direita em desktop, oculta em mobile) */}
+      <div className="md:w-1/2 bg-backgroundLogin/20 hidden md:flex items-center justify-center">
+        <div className="w-full h-full flex items-center justify-center">
+          <div className="text-center p-8 text-white">
+            <img src={image} alt="Logo" className="w-14 h-14 mx-auto" />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
