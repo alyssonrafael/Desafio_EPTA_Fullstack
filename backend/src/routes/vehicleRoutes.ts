@@ -53,7 +53,7 @@ router.put(
 );
 //rota para deleçao permanete de um veiculo
 router.delete(
-  "/vehicles/delete",
+  "/delete",
   autenticarToken,
   validateVehicleIdQuery,
   deleteVehicle
