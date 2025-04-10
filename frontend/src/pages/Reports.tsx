@@ -1,10 +1,14 @@
+
+
 const Reports = () => {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100">
-        <h1 className="text-3xl font-bold">Relatórios</h1>
+
+  return (
+    
+      <div>
+        <h3>Meu Conteúdo do reports</h3>
       </div>
-    );
-  };
-  
-  export default Reports;
-  
+   
+  );
+};
+
+export default Reports;
