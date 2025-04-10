@@ -7,3 +7,9 @@ env.exemple para manter as variaveis de ambiente seguras
 subir o banco : configura as variaveis de ambiente e depois roda docker-compose up -d
 
 npx prisma studio - para verificar o banco
+
+seeds e reset 
+
+npm run db:reset       # Apenas reseta
+
+npm run db:seed        # Apenas seed

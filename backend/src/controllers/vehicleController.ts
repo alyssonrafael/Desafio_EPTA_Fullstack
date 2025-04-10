@@ -36,18 +36,15 @@ export const registerVehicle = async (req: Request, res: Response) => {
     res.status(400).json({ error: "error creating vehicle" });
   }
 };
-//resgatar todos os veiculos idenpendente do usuario mais mostra quem cadastrou
+//resgatar todos os veiculos do usuario logado
 export const getallVehicles = async (req: Request, res: Response) => {
+  // usuario que criou o veiculo
+  const userId = req.usuario?.userId;
   try {
-    //incluindo usuario que criou o veiculo
+    // retorna os veiculos do usuario logado
     const vehicles = await prisma.vehicle.findMany({
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
+      where: {
+        userId: userId 
       },
     });
 
