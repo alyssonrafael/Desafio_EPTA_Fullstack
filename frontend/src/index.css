@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
 @import "tailwindcss";
 
 @theme {
@@ -12,4 +13,6 @@
   --color-textoCard: #a3aed0;
   /* botoes */
   --color-botaoBg: #007aff;
+  /* font inter para ser o padrao */
+  --font-sans: "Inter", sans-serif;
 }

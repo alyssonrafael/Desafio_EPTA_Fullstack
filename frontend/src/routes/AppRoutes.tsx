@@ -8,6 +8,7 @@ import { AuthProvider } from "../contexts/AuthContext";
 import { MessageProvider } from "../contexts/MessageContext";
 import { MainLayout } from "../components/MainLayout";
 import NotFound from "../pages/NotFound";
+import { VehicleProvider } from "../contexts/VehicleContext";
 
 const AppRoutes = () => {
   return (
@@ -15,6 +16,8 @@ const AppRoutes = () => {
     <MessageProvider>
       {/* provedor do contexto de autenticão envolvendo toda aplicação */}
       <AuthProvider>
+      {/* provedor do contexto de veiculos a aplicação */}
+        <VehicleProvider>
         <Router>
           <Routes>
             {/* rotas sem proteção */}
@@ -35,6 +38,7 @@ const AppRoutes = () => {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
+        </VehicleProvider>
       </AuthProvider>
     </MessageProvider>
   );
