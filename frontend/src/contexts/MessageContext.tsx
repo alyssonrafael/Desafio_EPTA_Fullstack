@@ -41,7 +41,6 @@ const iconMap = {
 
 // Componente que renderiza a mensagem estilizada
 const ThemedMessage = ({ type, message, isVisible }: ThemedMessageProps) => {
-  // Cores de fundo 
   const bgColors = {
     success: "bg-green-500",
     danger: "bg-red-500",
@@ -49,7 +48,6 @@ const ThemedMessage = ({ type, message, isVisible }: ThemedMessageProps) => {
     warning: "bg-yellow-500",
   };
 
-  // Cores de texto 
   const textColors = {
     success: "text-green-100",
     danger: "text-red-100",
@@ -57,32 +55,41 @@ const ThemedMessage = ({ type, message, isVisible }: ThemedMessageProps) => {
     warning: "text-yellow-100",
   };
 
-  // Seleciona o ícone apropriado
   const Icon = iconMap[type];
   
-  // Classes CSS para a transição de entrada/saída
+  // Animação horizontal para ambos (mobile e desktop)
   const transitionClass = isVisible
-    ? "translate-x-0 opacity-100"  // Visível: sem translação e totalmente opaco
-    : "translate-x-full opacity-0"; // Invisível: deslocado para direita e transparente
+    ? "translate-x-0 opacity-100"  // Visível: sem translação
+    : "translate-x-full opacity-0"; // Invisível: deslocado para direita
 
   return (
     <div
       className={`
-        ${bgColors[type]} ${textColors[type]} // Aplica cores conforme o tipo
-        px-4 py-3 rounded-md shadow-lg max-w-md w-full // Estilo base
-        transition-all duration-700 ease-in-out transform // Animações
-        ${transitionClass} // Classes condicionais de visibilidade
+        /* Estilos gerais */
+        ${bgColors[type]} ${textColors[type]}
+        px-4 py-3 rounded-lg shadow-lg 
+        w-[calc(100vw-2rem)] max-w-md
+        transition-all duration-500 ease-out transform
+        ${transitionClass}
+        
+        /* Estilos mobile */
+        mx-4
+
+        /* Estilos desktop */
+        sm:mx-0 sm:w-full
       `}
     >
       <div className="flex items-center gap-3">
-        {/* Container do ícone */}
-        <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
-          <Icon className="w-7 h-7" />
+        {/* Ícone responsivo */}
+        <div className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center flex-shrink-0">
+          <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
         </div>
 
-        {/* Texto da mensagem */}
+        {/* Texto responsivo */}
         <div className="flex-1">
-          <span className="text-base font-medium leading-snug">{message}</span>
+          <span className="text-sm sm:text-base font-medium leading-snug">
+            {message}
+          </span>
         </div>
       </div>
     </div>
@@ -140,8 +147,16 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
   return (
     <MessageContext.Provider value={{ showMessage }}>
       {children}
-      {/* Container fixo no canto superior direito */}
-      <div className="fixed top-4 right-2 flex justify-center z-50 pointer-events-none">
+      {/* Container principal - posição diferente para mobile/desktop */}
+      <div className={`
+        fixed z-50 pointer-events-none
+
+        /* Mobile: parte inferior centralizada */
+        bottom-4 left-0 right-0 flex justify-center
+
+        /* Desktop: canto superior direito */
+        sm:bottom-auto sm:top-4 sm:right-4 sm:left-auto
+      `}>
         {message && messageType && (
           <ThemedMessage
             type={messageType}
