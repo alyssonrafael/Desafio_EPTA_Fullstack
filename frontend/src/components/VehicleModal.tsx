@@ -98,7 +98,7 @@ export const VehicleModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 ">
-      <div className="relative bg-white p-6 rounded-lg w-full max-w-md shadow-lg space-y-6 mx-4 md:mx-0">
+      <div className="relative bg-white p-6 rounded-2xl w-full max-w-md shadow-lg space-y-6 mx-4 md:mx-0">
         {/* Botão de fechar no topo direito */}
         <button
           onClick={() => {

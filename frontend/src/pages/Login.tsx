@@ -63,7 +63,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
+    <div className="min-h-screen flex flex-col md:flex-row bg-gray-50">
       {/* Seção do formulário (esquerda em desktop, topo em mobile) */}
       <div className="w-full md:w-1/2 flex items-center justify-center p-8 bg-gray-50">
         <div className="max-w-md space-y-10">
