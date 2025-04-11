@@ -85,7 +85,7 @@ const Register = () => {
           <div className="text-center p-8 text-white">
             <img src={logo} alt="Logo" className="w-52 h-14 mx-auto" />
             <p className="text-gray-600 text-lg mt-4">
-              Bem-vindo de volta! Insira seus dados.
+              Insira seus dados para cadastro no App.
             </p>
           </div>
           {/* Formulário de registro */}
